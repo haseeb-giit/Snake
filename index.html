@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game</title>
+    <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap">
+    <style>
+        body {
+            background: #2c3e50;
+            font-family: 'Press Start 2P', cursive;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            color: #ecf0f1;
+            overflow: hidden;
+        }
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+        #board {
+            background: #000;
+            width: 80vmin;
+            height: 80vmin;
+            border: 4px solid #34495e;
+            display: grid;
+            grid-template-rows: repeat(18, 1fr);
+            grid-template-columns: repeat(18, 1fr);
+            border-radius: 12px;
+            position: relative;
+        }
+        .head {
+            background: #ff0000;
+            border-radius: 8px;
+        }
+        .snake {
+            background: #ff0000;
+            border: 2px solid #34495e;
+            border-radius: 4px;
+        }
+        .food {
+            background: #1eff00;
+            border: 1px solid #34495e;
+            border-radius: 4px;
+        }
+        .controls {
+            display: flex;
+            gap: 10px;
+            margin-top: 20px;
+            display: none; /* Hide controls initially */
+        }
+        .control-btn {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s ease;
+            width: 60px;
+            height: 60px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .control-btn:hover {
+            background: #c0392b;
+        }
+        .control-btn.up::before {
+            content: "↑";
+        }
+        .control-btn.down::before {
+            content: "↓";
+        }
+        .control-btn.left::before {
+            content: "←";
+        }
+        .control-btn.right::before {
+            content: "→";
+        }
+        .speed-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .speed-input {
+            padding: 10px;
+            border-radius: 5px;
+            border: 2px solid #34495e;
+            font-size: 16px;
+            text-align: center;
+            margin-bottom: 10px;
+            width: 80px;
+        }
+        .speed-container .control-btn {
+            width: auto;
+            padding: 10px 20px;
+        }
+        .start-game-btn {
+            background: #27ae60;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 20px;
+            transition: background 0.3s ease;
+            margin-top: 20px;
+        }
+        .start-game-btn:hover {
+            background: #2ecc71;
+        }
+        .game-over {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            color: #000;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+        }
+        .game-over h2 {
+            margin-bottom: 20px;
+        }
+        .game-over button {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background 0.3s ease;
+        }
+        .game-over button:hover {
+            background: #c0392b;
+        }
+        @media (max-width: 768px) {
+            .controls {
+                flex-direction: row;
+                flex-wrap: wrap;
+                display: flex; /* Show controls on mobile */
+            }
+            .control-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 24px;
+            }
+            .speed-container {
+                display: none; /* Hide speed input on mobile */
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="scoreboard">
+            <h1 id="scoreBox">Score: 0</h1>
+            <h1 id="hiscoreBox">HiScore: 0</h1>
+        </div>
+        <div id="board"></div>
+        <div class="speed-container">
+            <input type="number" id="sp" class="speed-input" placeholder="Speed (5-25)">
+            <button onclick="startGame()" id="hidde" class="control-btn">Start Game</button>
+        </div>
+        <div class="controls">
+            <button class="control-btn up" onclick="move('up')"></button>
+            <button class="control-btn down" onclick="move('down')"></button>
+            <button class="control-btn left" onclick="move('left')"></button>
+            <button class="control-btn right" onclick="move('right')"></button>
+        </div>
+        <button class="start-game-btn" onclick="startGame()">Start Game</button>
+    </div>
+    <div id="gameOver" class="game-over">
+        <h2>Game Over!</h2>
+        <p>Your score: <span id="finalScore"></span></p>
+        <button onclick="restartGame()">Play Again</button>
+    </div>
+
+    <script>
+        alert("Developer By Haseeb . Waite For Further Updates ..... ");
+        let inputDir = { x: 0, y: 0 };
+        let speed = 10;
+        let score = 0;
+        let snakearr = [{ x: 14, y: 15 }];
+        let food = { x: 12, y: 12 };
+        let lastpaintTime = 0;
+        let gameStarted = false;
+
+        function startGame() {
+            const speedInput = document.getElementById('sp').value;
+            speed = parseInt(speedInput) || 10;
+            document.querySelector('.speed-container').style.display = 'none';
+            document.querySelector('.controls').style.display = 'flex'; // Show controls
+            document.querySelector('.start-game-btn').style.display = 'none'; // Hide start game button
+            gameStarted = true;
+            window.requestAnimationFrame(main);
+        }
+
+        function main(ctime) {
+            if (!gameStarted) return;
+            window.requestAnimationFrame(main);
+            if ((ctime - lastpaintTime) / 1000 < 1 / speed) {
+                return;
+            }
+            lastpaintTime = ctime;
+            gameEngin();
+        }
+
+        function gameEngin() {
+            function isCollide(sarr) {
+                for (let i = 1; i < snakearr.length; i++) {
+                    if (snakearr[i].x === snakearr[0].x && snakearr[i].y === snakearr[0].y) {
+                        return true;
+                    }
+                }
+                if (snakearr[0].x >= 18 || snakearr[0].x < 0 || snakearr[0].y >= 18 || snakearr[0].y < 0) {
+                    return true;
+                }
+                return false;
+            }
+
+            if (isCollide(snakearr)) {
+                document.getElementById('finalScore').innerText = score;
+                document.getElementById('gameOver').style.display = 'flex';
+                inputDir = { x: 0, y: 0 };
+                gameStarted = false;
+                return;
+            }
+
+            if (snakearr[0].y === food.y && snakearr[0].x === food.x) {
+                snakearr.unshift({ x: snakearr[0].x + inputDir.x, y: snakearr[0].y + inputDir.y });
+                score += 1;
+                if (score > hiscore) {
+                    hiscore = score;
+                    localStorage.setItem("hiscore", JSON.stringify(hiscore));
+                    document.getElementById('hiscoreBox').innerText = "HiScore: " + hiscore;
+                }
+                document.getElementById('scoreBox').innerText = "Score: " + score;
+                food = { x: Math.floor(Math.random() * 18), y: Math.floor(Math.random() * 18) };
+            }
+
+            for (let i = snakearr.length - 2; i >= 0; i--) {
+                snakearr[i + 1] = { ...snakearr[i] };
+            }
+            snakearr[0].x += inputDir.x;
+            snakearr[0].y += inputDir.y;
+
+            document.getElementById('board').innerHTML = "";
+            snakearr.forEach((e, index) => {
+                const snakeElement = document.createElement('div');
+                snakeElement.style.gridRowStart = e.y + 1; // Adjusted for 1-based index
+                snakeElement.style.gridColumnStart = e.x + 1; // Adjusted for 1-based index
+                snakeElement.classList.add(index === 0 ? 'head' : 'snake');
+                document.getElementById('board').appendChild(snakeElement);
+            });
+
+            const foodElement = document.createElement('div');
+            foodElement.style.gridRowStart = food.y + 1; // Adjusted for 1-based index
+            foodElement.style.gridColumnStart = food.x + 1; // Adjusted for 1-based index
+            foodElement.classList.add('food');
+            document.getElementById('board').appendChild(foodElement);
+        }
+
+        function move(direction) {
+            if (direction === 'up' && inputDir.y === 0) inputDir = { x: 0, y: -1 };
+            if (direction === 'down' && inputDir.y === 0) inputDir = { x: 0, y: 1 };
+            if (direction === 'left' && inputDir.x === 0) inputDir = { x: -1, y: 0 };
+            if (direction === 'right' && inputDir.x === 0) inputDir = { x: 1, y: 0 };
+        }
+
+        function restartGame() {
+            document.getElementById('gameOver').style.display = 'none';
+            score = 0;
+            snakearr = [{ x: 14, y: 15 }];
+            food = { x: 12, y: 12 };
+            inputDir = { x: 0, y: 0 };
+            gameStarted = true;
+            window.requestAnimationFrame(main);
+        }
+
+        // Initialize hiScore
+        let hiscore = localStorage.getItem("hiscore");
+        if (hiscore == null) {
+            hiscore = 0;
+            localStorage.setItem("hiscore", JSON.stringify(hiscore));
+        } else {
+            hiscore = JSON.parse(hiscore);
+        }
+        document.getElementById('hiscoreBox').innerText = "HiScore: " + hiscore;
+
+        document.getElementById('hidde').addEventListener('click', startGame);
+    </script>
+</body>
+</html>

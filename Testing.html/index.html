@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Snake Game By Haseeb </title>
+    <style>
+        *{
+    padding: 0;
+    margin: 0;
+    /* width: 100vh; */
+}
+.body{
+     background-image: url(colorful-neon-city-4k-452313-1024x768-26.jpg);
+     background-repeat: no-repeat;
+    min-height: 100vh;
+ background-size: 100vw 100vh;
+
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.speed{
+    width: 400px;
+    padding: 5px;
+    /* background: lime; */
+}
+.board{
+    /* background:linear-gradient(rgb(170,236,170),rgb(236,236,167)); */
+    /* background:linear-gradient(rgb(255, 174, 0),rgb(0, 255, 106)); */
+    background-image: url(earth.png);
+    width: 100vmin;
+    height: 95vmin;
+    border: 2px solid black;
+    display: grid;
+    grid-template-rows:repeat(18,1fr);
+    grid-template-columns:repeat(18,1fr);
+    border-radius: 5px;
+}
+.head{
+border: 2px solid black;
+/* background-color:red; */
+background:linear-gradient(red,yellow);
+border-radius: 8px;
+
+}
+.snake{
+    background:linear-gradient(red,yellow);
+    /* margin: 1px; */
+    border:5px solid black;
+    border-radius: 25px;
+}
+.food{
+    background:linear-gradient(rgb(30, 255, 0),green);
+
+    border: 1px solid black;
+    border-radius: 20px;
+}
+.spd{
+background: tomato;
+width: 250px;
+height: 50px;
+margin: 5px;
+border-radius: 5px;
+align-items: center;
+}
+.pla1{
+    color: black;
+    font-size: 30px;
+    border: 2px solid white;
+cursor: pointer;}
+.pla2{
+    color: white;
+    background: black;
+    font-size: 20px;
+}
+.score{
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 39px;
+  font-weight: bold;
+  font-family: cursive;
+   color: rgb(2, 3, 110);
+}
+.scoree{
+    position: absolute;
+    top: 50px;
+    right: 10px;
+    font-size: 39px;
+  font-weight: bold;
+  font-family: cursive;
+   color: rgb(2, 3, 110);
+}
+
+    </style>
+</head>
+<body style="background-color: teal; font-family: sans-serif;">
+    <div class="body zindex">
+        <div class="bgg">
+            <h1 id="scoreBox" class="score">Score 0</h1>
+            <h1 id="hiscoreBox" class="scoree">HiScore 0</h1>
+        </div>
+        <div id="board" class="board">
+            <div id="speeed" class="speed">
+                <button onclick="rungame()" id="hidde" class="spd rungame pla1"> Enter Your Speed </button><br>
+                <input type="number" name="" class="spd pla2" placeholder="Min 5 % Max 25" id="sp">
+            </div>
+        </div>
+    </div>
+
+</body>
+<script>
+    function rungame() {
+    let inputDir = { x: 0, y: 0 };
+  
+    const music = new Audio('Sources/Audio/Moving.wav');
+    const over = new Audio('Sources/Audio/lose1.wav');
+    const foodmusic = new Audio('Sources/Audio/food.wav');
+    const soundee = new Audio('Sources/Audio/bg.mp3');
+    // const
+    //main locl game
+    let speed = document.getElementById('sp').value;
+    let score = 0;
+    let snakearr = [{ x: 14, y: 15 }];
+    let food = { x: 12, y: 12 };
+    let lastpaintTime = 0;
+    function main(ctime) {
+
+        window.requestAnimationFrame(main);
+        // console.log(ctime)
+        if ((ctime - lastpaintTime) / 1000 < 1 / speed) {
+            return;
+        }
+        lastpaintTime = ctime;
+        gameEngin();
+        // soundee.play();
+
+    }
+    function gameEngin() {
+        // updating the snake game
+        function isCollide(sarr) {
+            for (let i = 1; i < snakearr.length; i++) {
+                if (snakearr[i].x === snakearr[0].x && snakearr[i].y === snakearr[0].y) {
+                    return true;
+                }
+            }
+            // if you bump in the wall
+            if (snakearr[0].x >= 18 || snakearr[0].x <= 0 || snakearr[0].y >= 18 || snakearr[0].y <= 0) {
+                return true;
+            }
+        }
+        if (isCollide(snakearr)) {
+            soundee.pause();
+            over.play();
+            inputDir = { x: 0, y: 0 };
+            alert('Game Over. Press Any Key To Play Again !');
+            snakearr = [{ x: 14, y: 4 }];
+            score = 0;
+        }
+        // If You Eat The Food Increment The Score And regenerate the food
+        if (snakearr[0].y === food.y && snakearr[0].x === food.x) {
+            foodmusic.play();
+            snakearr.unshift({ x: snakearr[0].x + inputDir.x, y: snakearr[0].y + inputDir.y });
+            let a = 2;
+            let b = 16;
+            score += 1;
+            if (score > hiscore) {
+                hiscoreval = score;
+                localStorage.setItem("hiscore", JSON.stringify(hiscoreval));
+                hiscoreBox.innerHTML = "hiSocre: " + hiscore;
+
+            }
+            scoreBox.innerHTML = "Score : " + score;
+            food = { x: Math.round(a + (b - a) * Math.random()), y: Math.round(a + (b - a) * Math.random()) }
+        }
+        //Moving the snake
+
+        for (let i = snakearr.length - 2; i >= 0; i--) {
+            // const element = array[i];
+            snakearr[i + 1] = { ...snakearr[i] };
+        }
+        snakearr[0].x += inputDir.x;
+        snakearr[0].y += inputDir.y;
+
+        //Display the Snake
+        board.innerHTML = "";
+        snakearr.forEach((e, index) => {
+            snakeElement = document.createElement('div');
+            snakeElement.style.gridRowStart = e.y;
+            snakeElement.style.gridColumnStart = e.x;
+            if (index === 0) {
+                snakeElement.classList.add('head');
+            }
+            else {
+                snakeElement.classList.add('snake');
+            }
+            board.appendChild(snakeElement);
+
+        });
+        foodElement = document.createElement('div');
+        foodElement.style.gridRowStart = food.y;
+        foodElement.style.gridColumnStart = food.x;
+        foodElement.classList.add('food');
+        board.appendChild(foodElement);
+    }
+    // Movig Fucntions and Conmditions of the Game
+    let hiscore = localStorage.getItem("hiscore");
+    if (hiscore == null) {
+        hiscoreval = 0;
+        localStorage.setItem("hiscore", JSON.stringify(hiscoreval))
+    }
+    else {
+        hiscoreval = JSON.parse(hiscore);
+        hiscoreBox.innerHTML = "HiSocre: " + hiscore;
+    }
+    window.requestAnimationFrame(main);
+    window.addEventListener('keydown', e => {
+        inputDir = { x: 0, y: 1 } // Start the Game
+        music.play();
+        switch (e.key) {
+            case "ArrowUp":
+                console.log("Arrow up Key is Pressed");
+                inputDir.x = 0;
+                inputDir.y = -1;
+                break;
+            case "ArrowDown":
+                console.log("Arrow Down Key is Pressed");
+                inputDir.x = 0;
+                inputDir.y = 1;
+                break;
+            case "ArrowLeft":
+                console.log("Arrow Left Key is Pressed");
+                inputDir.x = -1;
+                inputDir.y = 0;
+                break;
+            case "ArrowRight":
+                console.log("Arrow Right Key is Pressed");
+                inputDir.x = 1;
+                inputDir.y = 0;
+                break;
+        }
+    });
+};
+
+
+</script>
+<script src="jquear 2.js"></script>
+<script>
+    $('#hidde').click(function () {
+        $('#speeed').hide();
+    });
+</script>
+
+</html>

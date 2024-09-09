@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en" dir="ltr">
+
+<head>
+  <meta charset="utf-8">
+  <title>MY testing Web site</title>
+  <style media="screen">
+    * {
+      padding: 0;
+      margin: 0;
+      /* width: 100vh; */
+    }
+
+    .body {
+      background-image: url(colorful-neon-city-4k-452313-1024x768-26.jpg);
+      background-repeat: no-repeat;
+      min-height: 100vh;
+      background-size: 100vw 100vh;
+
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .speed {
+      width: 400px;
+      padding: 5px;
+      /* background: lime; */
+    }
+
+    .board {
+      /* background:linear-gradient(rgb(170,236,170),rgb(236,236,167)); */
+      /* background:linear-gradient(rgb(255, 174, 0),rgb(0, 255, 106)); */
+      background-image: url(earth.png);
+      width: 100vmin;
+      height: 95vmin;
+      border: 2px solid black;
+      display: grid;
+      grid-template-rows: repeat(18, 1fr);
+      grid-template-columns: repeat(18, 1fr);
+      border-radius: 5px;
+    }
+
+    .head {
+      border: 2px solid black;
+      /* background-color:red; */
+      background: linear-gradient(red, yellow);
+      border-radius: 8px;
+
+    }
+
+    .snake {
+      background: linear-gradient(red, yellow);
+      /* margin: 1px; */
+      border: 5px solid black;
+      border-radius: 25px;
+    }
+
+    .food {
+      background: linear-gradient(rgb(30, 255, 0), green);
+
+      border: 1px solid black;
+      border-radius: 20px;
+    }
+
+    .spd {
+      background: tomato;
+      width: 250px;
+      height: 50px;
+      margin: 5px;
+      border-radius: 5px;
+      align-items: center;
+    }
+
+    .pla1 {
+      color: black;
+      font-size: 30px;
+      border: 2px solid white;
+      cursor: pointer;
+    }
+
+    .pla2 {
+      color: white;
+      background: black;
+      font-size: 20px;
+    }
+
+    .score {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      font-size: 39px;
+      font-weight: bold;
+      font-family: cursive;
+      color: rgb(2, 3, 110);
+    }
+
+    .scoree {
+      position: absolute;
+      top: 50px;
+      right: 10px;
+      font-size: 39px;
+      font-weight: bold;
+      font-family: cursive;
+      color: rgb(2, 3, 110);
+    }
+  </style>
+</head>
+
+<body>
+  <div class="body">
+    <div class="board" id="board">
+
+    </div>
+  </div>
+</body>
+<script type="text/javascript">
+  const snakedirection = { x: 0, y: 0 };
+  // const board = document.querySelector(".board");
+  let speed = 2;
+  let lastpaintTime = 0;
+  let snakearr = [{ x: 5, y: 5 }];
+  let food = { x: 15, y: 5 }
+  function main(ctime) {
+    window.requestAnimationFrame(main);
+    if ((ctime - lastpaintTime) / 1000 < 1 / speed) {
+      return;
+    }
+    lastpaintTime = ctime;
+    gameEngin();
+    // console.log(ctime);
+  }
+  function gameEngin() {
+    // Updating the snake array
+    board.innerHTML = "";
+    snakearr.forEach((e, index) => {
+      snakeelement = document.createElement('div');
+      snakeelement.style.gridRowStart = e.y;
+      snakeelement.style.gridColumnStart = e.x;
+      if (index === 0) {
+        snakeelement.classList.add('head');
+      }
+      else {
+        snakeelement.classList.add('snake');
+      }
+      // snakeelement.classList, add('snake');
+      board.appendChild(snakeelement);
+    });
+    foodelement = document.createElement('div');
+    foodelement.style.gridRowStart = food.y;
+    foodelement.style.gridColumnStart = food.x;
+    // Render The Food And The Snake
+    snakeelement.classList.add('food');
+    board.appendChild(foodelement);
+  }
+  window.requestAnimationFrame(main);
+</script>
+
+</html>
