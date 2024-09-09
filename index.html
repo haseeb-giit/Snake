@@ -193,8 +193,8 @@
     <script>
         alert("Developed by Haseeb . Waite For Further Updates ..... ");
         let inputDir = { x: 0, y: 0 };
-        let speed = 50;
-        let score = 0;
+        let speed = 5;
+        let score = 200;
         let snakearr = [{ x: 14, y: 15 }];
         let food = { x: 12, y: 12 };
         let lastpaintTime = 0;
@@ -248,6 +248,10 @@
                     hiscore = score;
                     localStorage.setItem("hiscore", JSON.stringify(hiscore));
                     document.getElementById('hiscoreBox').innerText = "HiScore: " + hiscore;
+                }
+                else if (score>47){
+                    alert("Treet Asa hi Nahi Milti ");
+                    score -- ;
                 }
                 document.getElementById('scoreBox').innerText = "Score: " + score;
                 food = { x: Math.floor(Math.random() * 18), y: Math.floor(Math.random() * 18) };
