@@ -110,18 +110,27 @@ button:active {
     <div class="game-container">
         <h1>Snake Game</h1>
         <canvas id="gameCanvas"></canvas>
+
         <div class="score-container">
             <p>Score: <span id="score">0</span></p>
         </div>
-        <div class="controls">
-            <button id="up">↑</button>
-            <div class="horizontal-controls">
-                <button id="left">←</button>
-                <button id="right">→</button>
+
+    <div>
+        <div class="right" style="width: 50%; float: left; margin-left: 20px;">
+            <div class="controls">
+                <button id="up">↑</button>
+                <div class="horizontal-controls">
+                    <button id="left">←</button>
+                    <button id="right">→</button>
+                </div>
+                <button id="down">↓</button>
             </div>
-            <button id="down">↓</button>
         </div>
-        <button id="reset" class="reset-button">Reset</button>
+        <div class="lef" style="width: 40%; float: left;">
+            <button id="reset" style="width: 100px;" class="reset-button">Reset</button>
+
+        </div>
+    </div>
         <p class="developer">Developed by <a href="https://haseeb-giit.github.io/potfolio/" style="text-decoration: none;color: rgb(255, 230, 0);"><b> Haseeb Ali</b></a></p>
     </div>
     <!-- <script src="script.js"></script> -->
@@ -133,8 +142,8 @@ const ctx = canvas.getContext("2d");
 const scoreDisplay = document.getElementById("score");
 const resetButton = document.getElementById("reset");
 
-canvas.width = 400;
-canvas.height = 400;
+canvas.width = 300;
+canvas.height = 300;
 
 const box = 20;
 let snake;
